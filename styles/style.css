@@ -10,8 +10,9 @@
 	top: 0;
 	left: 0;
 	width: 100%;
-	height: 100%;
+	height: 240%;
 	background: #fff;
+	overflow-y: hidden;
 }
 
 #popUp .closePopUp {
@@ -19,7 +20,7 @@
 	top: 20px;
 	right: 20px;
 	font-size: 40px;
-	color: #fe052c;
+	color: #b3001b;
 	text-decoration: none;
 }
 
@@ -39,6 +40,7 @@
 
 #popUp .container {
 	margin-top: 80px;
+	padding: 30px;
 }
 
 #popUp h1 {
@@ -47,7 +49,7 @@
 
 #popUp .popUpAction {
 	padding: 10px;
-	background-color: #fe052c;
+	background-color: #b3001b;
 	color: #fff;
 	text-decoration: none;
 	border-radius: 5px;
@@ -57,13 +59,13 @@
 }
 
 #popUp .popUpAction:hover {
-	color: #fe052c;
-	background: #fff;
+	color: white;
+	background: rgb(18, 18, 18);
 }
 
 /* Header styles */
 header {
-	background-color: #fe052c;
+	background-color: #b3001b;
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -108,7 +110,7 @@ header #search a {
 }
 
 header #search a:hover {
-	background: #cc0020;
+	background: #b3001b;
 }
 
 header #search img {
@@ -133,7 +135,7 @@ header #search.active input {
 }
 
 header #search.active a {
-	background: #cc0020;
+	background: #b3001b;
 }
 
 header nav a {
@@ -148,7 +150,7 @@ header nav a {
 
 header nav a:hover {
 	background-color: #fff;
-	color: #cc0020;
+	color: #b3001b;
 }
 
 nav ul {
@@ -161,7 +163,7 @@ nav ul {
 
 nav ul li {
 	display: inline-block;
-	background-color: #cc0020;
+	background-color: #b3001b;
 	position: relative;
 }
 
@@ -211,6 +213,7 @@ nav ul ul li {
 .article .featuredImage img {
 	max-width: 100%;
 	border-radius: 50px;
+	margin-top: 10px;
 }
 
 .article .articleContent {
@@ -224,21 +227,12 @@ nav ul ul li {
 
 .article .articleContent h3 {
 	margin-bottom: 0;
-	color: #fe052c;
+	color: rgb(18, 18, 18);
 }
 
 .article .articleContent h6 {
-	margin-top: 0;
+	margin-top: 5px;
 	color: #666;
-}
-
-.article .impressions {
-	width: 15%;
-	float: right;
-	font-size: 30px;
-	margin-top: 15px;
-	text-align: right;
-	color: #097fb2;
 }
 
 a {
