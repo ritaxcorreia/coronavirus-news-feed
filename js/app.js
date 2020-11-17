@@ -5,6 +5,8 @@ const redditAPI = `https://www.reddit.com/r/coronavirus/top.json`;
 const guardianAPI = `https://cors-anywhere.herokuapp.com/https://content.guardianapis.com/search?order-by=newest&q=coronavirus&api-key=${guardianKey}`;
 const newsApi = `https://cors-anywhere.herokuapp.com/https://newsapi.org/v2/top-headlines?q=coronavirus&apiKey=${newsApiKey}`;
 
+let searchKeyword = "";
+
 // DOM selectors
 const mainContainer = document.querySelector("#main");
 
@@ -23,9 +25,12 @@ const guardianButton = document.querySelector("#guardian-button");
 const redditButton = document.querySelector("#reddit-button");
 const severalButton = document.querySelector("#several-button");
 
-const searchButton = document.querySelector("#search");
+const search = document.querySelector("#search");
+const searchButton = document.querySelector("#search a");
 
 const closeButton = document.querySelector(".closePopUp");
+
+const searchInput = document.querySelector(".search-field");
 
 // shows loader
 function showLoader() {
@@ -94,6 +99,42 @@ redditButton.addEventListener("click", displayRedditAPIArticles);
 // Displays Several Sources (News API) articles, when dropdown is clicked
 severalButton.addEventListener("click", displayNewsAPIArticles);
 
+// articles are stored here so they can set by API fetches and also filtered by search input changes
+//
+// structure should standard across APIs, an array of:
+// {
+//   title: "",
+// 	 category: "",
+// 	 url: "",
+// 	 imageSrc: "",
+// 	 description: "",
+// }
+let articles = [];
+
+function updateArticles() {
+	searchKeyword = searchInput.value;
+
+	clearArticleList();
+
+	articles
+		// apply the search filter
+		.filter((article) => {
+			return article.title
+				.toLowerCase()
+				.includes(searchKeyword.toLowerCase());
+		})
+		// append filtered articles
+		.forEach((article) => {
+			appendArticle(
+				article.title,
+				article.category,
+				article.url,
+				article.imageSrc,
+				article.description
+			);
+		});
+}
+
 // Fetches data from News API
 function displayNewsAPIArticles() {
 	showLoader();
@@ -102,26 +143,21 @@ function displayNewsAPIArticles() {
 		.then((data) => {
 			console.log(`NewsAPI`, data);
 
-			clearArticleList();
+			// store new articles
+			articles = data.articles.map((item) => {
+				return {
+					title: item.title,
+					category: item.source.name,
+					url: item.url,
+					imageSrc: item.urlToImage,
+					description: item.content,
+				};
+			});
+
+			// display new articles
+			updateArticles();
 
 			hideLoader();
-
-			// Runs a forEach loop on the fetched articles array
-			// In each iteration, adds content and appends it
-
-			data.articles.forEach((item) => {
-				const title = item.title;
-
-				const url = item.url;
-
-				const category = item.source.name;
-
-				const imageSrc = item.urlToImage;
-
-				const description = item.content;
-
-				appendArticle(title, category, url, imageSrc, description);
-			});
 		})
 		.catch((err) => {
 			console.error(err);
@@ -140,26 +176,21 @@ function displayGuardianArticles() {
 		.then((data) => {
 			console.log(`Guardian`, data);
 
-			clearArticleList();
+			// store new articles
+			articles = data.response.results.map((item) => {
+				return {
+					title: item.webTitle,
+					category: item.sectionName,
+					url: item.webUrl,
+					imageSrc: "images/guardian-logo.jpeg",
+					description: item.webTitle,
+				};
+			});
+
+			// display new articles
+			updateArticles();
 
 			hideLoader();
-
-			// Runs a forEach loop on the fetched articles array
-			// In each iteration, adds content and appends it
-
-			data.response.results.forEach((item) => {
-				const { webTitle, webUrl, sectionName } = item;
-
-				const title = webTitle;
-				const category = sectionName;
-				const url = webUrl;
-				const imageSrc = "images/guardian-logo.jpeg";
-
-				// Because Guardian API doesn't provide an article description, I'm repeating the title here
-				const description = webTitle;
-
-				appendArticle(title, category, url, imageSrc, description);
-			});
 		})
 		.catch((err) => {
 			console.error(err);
@@ -178,27 +209,21 @@ function displayRedditAPIArticles() {
 		.then((data) => {
 			console.log(`Reddit`, data);
 
-			clearArticleList();
+			// store new articles
+			articles = data.data.children.map((item) => {
+				return {
+					title: item.data.title,
+					category: item.data.subreddit,
+					url: item.data.url,
+					imageSrc: item.data.thumbnail,
+					description: item.data.title,
+				};
+			});
+
+			// display new articles
+			updateArticles();
 
 			hideLoader();
-
-			// Runs a forEach loop on the fetched articles array
-			// In each iteration, adds content and appends it
-
-			data.data.children.forEach((item) => {
-				const title = item.data.title;
-
-				const url = item.data.url;
-
-				const category = item.data.subreddit;
-
-				const imageSrc = item.data.thumbnail;
-
-				// Because no description is available, I'm repeating the title
-				const description = item.data.title;
-
-				appendArticle(title, category, url, imageSrc, description);
-			});
 		})
 		.catch((err) => {
 			console.error(err);
@@ -235,10 +260,10 @@ feedrLogo.addEventListener("click", displayNewsAPIArticles);
 
 // When the user clicks the search icon, expand search input box
 searchButton.addEventListener("click", (event) => {
-	if (searchButton.className === "active") {
-		searchButton.classList.remove("active");
+	if (search.className === "active") {
+		search.classList.remove("active");
 	} else {
-		searchButton.classList.add("active");
+		search.classList.add("active");
 	}
 });
 
@@ -247,3 +272,6 @@ closeButton.addEventListener("click", (event) => {
 	popup.classList.add("loader");
 	hideLoader();
 });
+
+// Every time the user updates the search input, we update the articles which internally filters the resulting set
+searchInput.addEventListener("input", updateArticles);
