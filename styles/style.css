@@ -10,8 +10,9 @@
 	top: 0;
 	left: 0;
 	width: 100%;
-	height: 100vh;
+	height: 100%;
 	background: #fff;
+	overflow: hidden;
 	overflow-y: hidden;
 }
 
@@ -41,6 +42,9 @@
 #popUp .container {
 	margin-top: 80px;
 	padding: 30px;
+	overflow-y: hidden;
+	overflow: hidden;
+	height: 100%;
 }
 
 #popUp h1 {
@@ -190,6 +194,7 @@ nav ul ul li {
 /* Main Section */
 #main {
 	margin-top: 65px;
+	height: 100vh;
 }
 
 /* Individual Article Styling */
