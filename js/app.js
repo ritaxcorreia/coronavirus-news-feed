@@ -3,7 +3,8 @@
 // API variables
 const redditAPI = `https://www.reddit.com/r/coronavirus/top.json`;
 const guardianAPI = `https://cors-anywhere.herokuapp.com/https://content.guardianapis.com/search?order-by=newest&q=coronavirus&api-key=${guardianKey}`;
-const newsApi = `https://cors-anywhere.herokuapp.com/https://newsapi.org/v2/top-headlines?q=coronavirus&apiKey=${newsApiKey}`;
+// const newsApi = `https://cors-anywhere.herokuapp.com/https://newsapi.org/v2/top-headlines?q=coronavirus&apiKey=${newsApiKey}`;
+const nytApi = `https://api.nytimes.com/svc/search/v2/articlesearch.json?fq=coronavirus&api-key=${nytApiKey}`;
 
 let searchKeyword = "";
 
@@ -23,7 +24,7 @@ const feedrLogo = document.querySelector(".feedr-logo");
 
 const guardianButton = document.querySelector("#guardian-button");
 const redditButton = document.querySelector("#reddit-button");
-const severalButton = document.querySelector("#several-button");
+const nytButton = document.querySelector("#nyt-button");
 
 const search = document.querySelector("#search");
 const searchButton = document.querySelector("#search a");
@@ -87,8 +88,8 @@ function appendArticle(title, category, url, imageSrc, description) {
 // shows loading spinner on page load
 showLoader();
 
-// On page load we default to News API
-displayNewsAPIArticles();
+// On page load we default to Reddit API
+displayRedditAPIArticles();
 
 // Displays Guardian articles, when dropdown is clicked
 guardianButton.addEventListener("click", displayGuardianArticles);
@@ -97,11 +98,11 @@ guardianButton.addEventListener("click", displayGuardianArticles);
 redditButton.addEventListener("click", displayRedditAPIArticles);
 
 // Displays Several Sources (News API) articles, when dropdown is clicked
-severalButton.addEventListener("click", displayNewsAPIArticles);
+nytButton.addEventListener("click", displayNytAPIArticles);
 
 // articles are stored here so they can set by API fetches and also filtered by search input changes
 //
-// structure should standard across APIs, an array of:
+// structure should be standard across APIs, an array of:
 // {
 //   title: "",
 // 	 category: "",
@@ -135,22 +136,22 @@ function updateArticles() {
 		});
 }
 
-// Fetches data from News API
-function displayNewsAPIArticles() {
+//Fetches data from NYT API
+function displayNytAPIArticles() {
 	showLoader();
-	fetch(newsApi)
+	fetch(nytApi)
 		.then((response) => response.json())
 		.then((data) => {
-			console.log(`NewsAPI`, data);
+			console.log(`NYT API`, data);
 
 			// store new articles
-			articles = data.articles.map((item) => {
+			articles = data.response.docs.map((item) => {
 				return {
-					title: item.title,
-					category: item.source.name,
-					url: item.url,
-					imageSrc: item.urlToImage,
-					description: item.content,
+					title: item.headline.main,
+					category: item.source,
+					url: item.web_url,
+					imageSrc: "images/nyt-logo.png",
+					description: item.abstract,
 				};
 			});
 
@@ -236,7 +237,7 @@ function displayRedditAPIArticles() {
 
 // When the user selects an article's title show the `#popUp` overlay.
 // The content of the article must be inserted in the `.container` class inside `#popUp`.
-// Make sure you remove the `.loader` class when toggling the articleinformation in the pop-up.
+// Then I remove the `.loader` class when toggling the article information in the pop-up.
 // Changes link of the "Read more from source" button to that of the respective article.
 function displayPopUpContent(title, description, url) {
 	// make sure it's not showing the loader
@@ -256,7 +257,7 @@ function displayPopUpContent(title, description, url) {
 }
 
 // Clicking the "Covid-19 News Feed" title will display the main/default feed
-feedrLogo.addEventListener("click", displayNewsAPIArticles);
+feedrLogo.addEventListener("click", displayRedditAPIArticles);
 
 // When the user clicks the search icon, expand search input box
 searchButton.addEventListener("click", (event) => {
